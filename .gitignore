@@ -1,0 +1,25 @@
+
+# .NET
+bin/
+obj/
+
+# Node.js
+node_modules/
+dist/
+build/
+
+# Arquivos de ambiente
+.env
+.env.*
+!.env.example
+
+# IDE
+.vs/
+.vscode/
+
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
