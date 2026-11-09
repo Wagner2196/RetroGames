@@ -1,4 +1,4 @@
-
+```gitignore
 # .NET
 [Bb]in/
 [Oo]bj/
@@ -15,6 +15,7 @@ dist/
 .env
 .env.*
 !.env.example
+RetroGames.WebApi/appsettings.json
 
 # Logs
 *.log
@@ -24,3 +25,4 @@ yarn-debug.log*
 # Sistema operacional
 .DS_Store
 Thumbs.db
+```
