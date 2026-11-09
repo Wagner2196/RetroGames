@@ -3,33 +3,37 @@ using MySqlConnector;
 
 namespace RetroGames.Repository
 {
-    // Classe base abstrata para os Repositories.
-    // Centraliza operações comuns de acesso ao banco de dados.
     public abstract class RepositoryBase
     {
-        // Guarda as configurações necessárias para conectar ao banco.
-        private readonly RepositoryConfig _config;
+        private readonly Func<MySqlConnection> _criarConexao;
 
-        // Recebe a configuração no momento em que a classe derivada é criada.
         protected RepositoryBase(RepositoryConfig config)
         {
-            _config = config;
+            _criarConexao = () =>
+                new MySqlConnection(config.ConnectionString);
         }
 
-        // Cria uma conexão com o MySQL e abre essa conexão.
-        // A conexão é devolvida aberta para que o Repository possa utilizá-la.
+        protected RepositoryBase(DbConnectionFactory connectionFactory)
+        {
+            _criarConexao = connectionFactory.CreateConnection;
+        }
+
         protected async Task<MySqlConnection> AbrirConexaoAsync()
         {
-            var connection = new MySqlConnection(_config.ConnectionString);
+            var connection = _criarConexao();
 
-            await connection.OpenAsync();
-
-            return connection;
+            try
+            {
+                await connection.OpenAsync();
+                return connection;
+            }
+            catch
+            {
+                await connection.DisposeAsync();
+                throw;
+            }
         }
 
-        // Cria um comando SQL associado à conexão informada.
-        // O SQL é recebido como parâmetro para que cada Repository
-        // possa executar sua própria consulta.
         protected MySqlCommand CriarComando(
             MySqlConnection connection,
             string sql)
@@ -37,9 +41,6 @@ namespace RetroGames.Repository
             return new MySqlCommand(sql, connection);
         }
 
-        // Adiciona um parâmetro ao comando SQL.
-        // O uso de parâmetros ajuda a evitar SQL Injection.
-        // Se o valor for nulo, ele será convertido para DBNull.Value.
         protected void AdicionarParametro(
             MySqlCommand command,
             string nome,
@@ -50,9 +51,6 @@ namespace RetroGames.Repository
                 valor ?? DBNull.Value);
         }
 
-        // Executa um comando de gravação, como INSERT ou UPDATE.
-        // Se ocorrer o erro MySQL 1062, lança a exceção própria
-        // RegistroDuplicadoException.
         protected async Task<int> ExecutarGravacaoAsync(
             MySqlCommand command)
         {

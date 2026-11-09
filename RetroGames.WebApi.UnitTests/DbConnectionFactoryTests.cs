@@ -35,6 +35,7 @@ namespace RetroGames.WebApi.UnitTests
             Assert.Contains(condicoes, c => c.Descricao == "Novo");
             Assert.Contains(condicoes, c => c.Descricao == "Usado");
         }
+
         [Fact]
         public async Task PlataformaRepository_DeveRetornarPlataformas()
         {
@@ -43,7 +44,7 @@ namespace RetroGames.WebApi.UnitTests
             var repository = new PlataformaRepository(factory);
 
             // Act
-            var plataformas = await repository.ObterTodosAsync();
+            var plataformas = await repository.ListarAsync();
 
             // Assert
             Assert.NotEmpty(plataformas);
@@ -51,6 +52,7 @@ namespace RetroGames.WebApi.UnitTests
             Assert.Contains(plataformas, p => p.Nome == "Xbox Series X");
             Assert.Contains(plataformas, p => p.Nome == "Nintendo Switch");
         }
+
         [Fact]
         public async Task GeneroRepository_DeveRetornarGeneros()
         {
@@ -67,6 +69,7 @@ namespace RetroGames.WebApi.UnitTests
             Assert.Contains(generos, g => g.Nome == "Aventura");
             Assert.Contains(generos, g => g.Nome == "RPG");
         }
+
         [Fact]
         public async Task JogoRepository_DeveRetornarJogos()
         {
@@ -83,6 +86,7 @@ namespace RetroGames.WebApi.UnitTests
             Assert.Contains(jogos, j => j.Nome == "Forza Horizon 5");
             Assert.Contains(jogos, j => j.Nome == "The Legend of Zelda: Tears of the Kingdom");
         }
+
         [Fact]
         public async Task UsuarioRepository_DeveRetornarUsuarios()
         {
@@ -97,6 +101,7 @@ namespace RetroGames.WebApi.UnitTests
             Assert.NotEmpty(usuarios);
             Assert.Contains(usuarios, u => u.Email == "cliente@retrogames.com");
         }
+
         [Fact]
         public async Task PerfilRepository_DeveRetornarPerfis()
         {
