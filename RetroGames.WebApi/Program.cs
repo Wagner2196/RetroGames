@@ -18,10 +18,12 @@ builder.Services.AddScoped<DbConnectionFactory>();
 builder.Services.AddScoped<CondicaoJogoRepository>();
 builder.Services.AddScoped<PlataformaRepository>();
 builder.Services.AddScoped<GeneroRepository>();
-builder.Services.AddScoped<JogoRepository>();
+
+builder.Services.AddScoped<IJogoRepository, JogoRepository>();
+builder.Services.AddScoped<IJogoGeneroRepository, JogoGeneroRepository>();
+
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<PerfilRepository>();
-
 // Registra os Services.
 builder.Services.AddScoped<CondicaoJogoService>();
 builder.Services.AddScoped<PlataformaService>();

@@ -69,7 +69,6 @@ namespace RetroGames.WebApi.UnitTests
             Assert.Contains(generos, g => g.Nome == "Aventura");
             Assert.Contains(generos, g => g.Nome == "RPG");
         }
-
         [Fact]
         public async Task JogoRepository_DeveRetornarJogos()
         {
@@ -78,10 +77,17 @@ namespace RetroGames.WebApi.UnitTests
             var repository = new JogoRepository(factory);
 
             // Act
-            var jogos = await repository.ObterTodosAsync();
+            var resultado = await repository.ListarAsync(
+                incluirInativos: true,
+                pagina: 1,
+                tamanhoPagina: 100);
+
+            var jogos = resultado.Itens;
 
             // Assert
             Assert.NotEmpty(jogos);
+            Assert.True(resultado.Total >= jogos.Count);
+
             Assert.Contains(jogos, j => j.Nome == "God of War Ragnarök");
             Assert.Contains(jogos, j => j.Nome == "Forza Horizon 5");
             Assert.Contains(jogos, j => j.Nome == "The Legend of Zelda: Tears of the Kingdom");
@@ -116,6 +122,68 @@ namespace RetroGames.WebApi.UnitTests
             Assert.NotEmpty(perfis);
             Assert.Contains(perfis, p => p.Descricao == "Administrador");
             Assert.Contains(perfis, p => p.Descricao == "Cliente");
+        }
+
+        [Fact]
+        public async Task JogoGeneroRepository_DeveListarTodosOsVinculos()
+        {
+            // Arrange
+            var factory = new DbConnectionFactory();
+            var repository = new JogoGeneroRepository(factory);
+
+            // Act
+            var vinculos = await repository.ListarTodosAsync();
+
+            // Assert
+            Assert.NotEmpty(vinculos);
+        }
+        [Fact]
+        public async Task JogoGeneroRepository_DeveListarVinculosPorJogos()
+        {
+            // Arrange
+            var factory = new DbConnectionFactory();
+            var repository = new JogoGeneroRepository(factory);
+            var jogoRepository = new JogoRepository(factory);
+
+            var resultadoJogos = await jogoRepository.ListarAsync(
+                incluirInativos: true,
+                pagina: 1,
+                tamanhoPagina: 10);
+
+            var idsJogos = resultadoJogos.Itens
+                .Select(j => j.Id)
+                .ToList();
+
+            // Act
+            var vinculos = await repository.ListarPorJogosAsync(idsJogos);
+
+            // Assert
+            Assert.All(vinculos, v => Assert.Contains(v.IdJogo, idsJogos));
+        }
+        [Fact]
+        public async Task JogoGeneroRepository_DeveInserirERemoverVinculos()
+        {
+            // Arrange
+            var factory = new DbConnectionFactory();
+            var repository = new JogoGeneroRepository(factory);
+
+            int idJogo = 1;
+            var idsGeneros = new List<int> { 1, 3 };
+
+            // Act
+            await repository.RemoverPorJogoAsync(idJogo);
+            await repository.InserirAsync(idJogo, idsGeneros);
+
+            var vinculos = await repository.ListarPorJogosAsync(
+                new List<int> { idJogo });
+
+            // Assert
+            Assert.Equal(2, vinculos.Count);
+            Assert.Contains(vinculos, v => v.IdGenero == 1);
+            Assert.Contains(vinculos, v => v.IdGenero == 3);
+
+            // Cleanup
+            await repository.RemoverPorJogoAsync(idJogo);
         }
     }
 }

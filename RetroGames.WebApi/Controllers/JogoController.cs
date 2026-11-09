@@ -20,15 +20,28 @@ namespace RetroGames.WebApi.Controllers
             _service = service;
         }
 
-        // Indica que este método responde a requisições HTTP GET.
+        // Responde a requisições HTTP GET.
+        // Permite filtrar e paginar os jogos.
         [HttpGet]
-        public async Task<IActionResult> ObterTodos()
+        public async Task<IActionResult> Listar(
+            [FromQuery] string? nome = null,
+            [FromQuery] int? idPlataforma = null,
+            [FromQuery] List<int>? ids = null,
+            [FromQuery] bool incluirInativos = false,
+            [FromQuery] int pagina = 1,
+            [FromQuery] int tamanhoPagina = 10)
         {
-            // Solicita ao Service a lista de jogos cadastrados.
-            var jogos = await _service.ObterTodosAsync();
+            // Solicita ao Service os jogos e o total encontrado.
+            var resultado = await _service.ListarAsync(
+                nome,
+                idPlataforma,
+                ids,
+                incluirInativos,
+                pagina,
+                tamanhoPagina);
 
-            // Retorna a lista com o status HTTP 200 (OK).
-            return Ok(jogos);
+            // Retorna o resultado com status HTTP 200 (OK).
+            return Ok(resultado);
         }
     }
 }
