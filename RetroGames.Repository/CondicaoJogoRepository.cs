@@ -1,23 +1,21 @@
-﻿using MySqlConnector;
+﻿
 using RetroGames.Model.Model;
 
 namespace RetroGames.Repository
 {
     public class CondicaoJogoRepository
+        : RepositoryBase, ICondicaoJogoRepository
     {
-        private readonly DbConnectionFactory _connectionFactory;
-
         public CondicaoJogoRepository(DbConnectionFactory connectionFactory)
+            : base(connectionFactory)
         {
-            _connectionFactory = connectionFactory;
         }
 
         public async Task<List<CondicaoJogo>> ObterTodosAsync()
         {
             var condicoes = new List<CondicaoJogo>();
 
-            await using var connection = _connectionFactory.CreateConnection();
-            await connection.OpenAsync();
+            await using var connection = await AbrirConexaoAsync();
 
             const string sql = @"
                 SELECT
@@ -26,7 +24,7 @@ namespace RetroGames.Repository
                 FROM tb_condicao_jogo;
             ";
 
-            await using var command = new MySqlCommand(sql, connection);
+            await using var command = CriarComando(connection, sql);
             await using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())

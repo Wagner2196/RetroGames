@@ -14,16 +14,36 @@ builder.Services.AddSwaggerGen();
 // Registra a fábrica responsável por criar conexões com o MySQL.
 builder.Services.AddScoped<DbConnectionFactory>();
 
-// Registra os Repositories.
+// Registra os Repositories concretos.
 builder.Services.AddScoped<CondicaoJogoRepository>();
 builder.Services.AddScoped<PlataformaRepository>();
 builder.Services.AddScoped<GeneroRepository>();
-
-builder.Services.AddScoped<IJogoRepository, JogoRepository>();
-builder.Services.AddScoped<IJogoGeneroRepository, JogoGeneroRepository>();
-
+builder.Services.AddScoped<JogoRepository>();
+builder.Services.AddScoped<JogoGeneroRepository>();
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<PerfilRepository>();
+
+// Registra as interfaces dos Repositories.
+// A interface e a classe concreta compartilham a mesma instância
+// durante o escopo da requisição.
+builder.Services.AddScoped<ICondicaoJogoRepository>(
+    provider => provider.GetRequiredService<CondicaoJogoRepository>());
+
+builder.Services.AddScoped<IPlataformaRepository>(
+    provider => provider.GetRequiredService<PlataformaRepository>());
+
+builder.Services.AddScoped<IGeneroRepository>(
+    provider => provider.GetRequiredService<GeneroRepository>());
+
+builder.Services.AddScoped<IJogoRepository>(
+    provider => provider.GetRequiredService<JogoRepository>());
+
+builder.Services.AddScoped<IJogoGeneroRepository>(
+    provider => provider.GetRequiredService<JogoGeneroRepository>());
+
+// Registra o conjunto de Repositories.
+builder.Services.AddScoped<IRepositorySet, RepositorySet>();
+
 // Registra os Services.
 builder.Services.AddScoped<CondicaoJogoService>();
 builder.Services.AddScoped<PlataformaService>();
