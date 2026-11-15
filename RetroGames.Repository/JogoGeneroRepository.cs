@@ -99,6 +99,8 @@ namespace RetroGames.Repository
         }
 
         // Insere os vínculos de um jogo com seus gêneros.
+
+        // Insere os vínculos de um jogo com seus gêneros.
         public async Task InserirAsync(
             int idJogo,
             List<int> idsGeneros)
@@ -109,43 +111,28 @@ namespace RetroGames.Repository
 
             await using var connection = await AbrirConexaoAsync();
 
-            // A transação garante que os vínculos sejam gravados
-            // como uma unidade: todos ou nenhum.
-            await using var transaction = await connection.BeginTransactionAsync();
+            const string sql = @"
+        INSERT INTO tb_jogo_genero (
+            co_jogo,
+            co_genero
+        )
+        VALUES (
+            @idJogo,
+            @idGenero
+        );
+    ";
 
-            try
+            foreach (var idGenero in idsGeneros)
             {
-                const string sql = @"
-                    INSERT INTO tb_jogo_genero (
-                        co_jogo,
-                        co_genero
-                    )
-                    VALUES (
-                        @idJogo,
-                        @idGenero
-                    );
-                ";
+                await using var command = CriarComando(connection, sql);
 
-                foreach (var idGenero in idsGeneros)
-                {
-                    await using var command = CriarComando(connection, sql);
+                AdicionarParametro(command, "@idJogo", idJogo);
+                AdicionarParametro(command, "@idGenero", idGenero);
 
-                    command.Transaction = transaction;
-
-                    AdicionarParametro(command, "@idJogo", idJogo);
-                    AdicionarParametro(command, "@idGenero", idGenero);
-
-                    await command.ExecuteNonQueryAsync();
-                }
-
-                await transaction.CommitAsync();
-            }
-            catch
-            {
-                await transaction.RollbackAsync();
-                throw;
+                await ExecutarGravacaoAsync(command);
             }
         }
+
 
         // Remove os vínculos de um jogo.
         // O jogo em si não é removido.

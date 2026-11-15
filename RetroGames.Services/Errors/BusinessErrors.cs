@@ -31,6 +31,10 @@ public static class BusinessErrors
     public static readonly BusinessError JogoNaoEncontrado =
         new(10, "Jogo não encontrado.", HttpStatusCode.NotFound);
 
+    // Erro 11: plataforma informada para o jogo não existe.
+    public static readonly BusinessError PlataformaInexistente =
+        new(11, "A plataforma informada não existe.", HttpStatusCode.NotFound);
+
     // Erro 12: condição informada não existe.
     public static readonly BusinessError CondicaoNaoEncontrada =
         new(12, "A condição informada não existe.", HttpStatusCode.NotFound);
