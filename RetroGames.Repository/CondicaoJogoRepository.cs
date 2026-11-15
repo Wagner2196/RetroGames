@@ -6,8 +6,8 @@ namespace RetroGames.Repository
     public class CondicaoJogoRepository
         : RepositoryBase, ICondicaoJogoRepository
     {
-        public CondicaoJogoRepository(DbConnectionFactory connectionFactory)
-            : base(connectionFactory)
+        public CondicaoJogoRepository(RepositoryConfig config)
+            : base(config)
         {
         }
 

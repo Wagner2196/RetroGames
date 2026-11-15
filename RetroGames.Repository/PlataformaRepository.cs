@@ -7,8 +7,8 @@ namespace RetroGames.Repository
     public class PlataformaRepository
         : RepositoryBase, IPlataformaRepository
     {
-        public PlataformaRepository(DbConnectionFactory connectionFactory)
-            : base(connectionFactory)
+        public PlataformaRepository(RepositoryConfig config)
+            : base(config)
         {
         }
 

@@ -5,8 +5,8 @@ namespace RetroGames.Repository
 {
     public class GeneroRepository : RepositoryBase, IGeneroRepository
     {
-        public GeneroRepository(DbConnectionFactory connectionFactory)
-            : base(connectionFactory)
+        public GeneroRepository(RepositoryConfig config)
+     : base(config)
         {
         }
 

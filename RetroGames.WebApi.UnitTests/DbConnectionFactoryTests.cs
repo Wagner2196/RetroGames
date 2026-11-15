@@ -1,82 +1,80 @@
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using RetroGames.Repository;
 using Xunit;
 
 namespace RetroGames.WebApi.UnitTests
 {
+    // Classe responsável por testar a conexão com o banco
+    // e o funcionamento dos repositórios.
     public class DbConnectionFactoryTests
     {
+        // Testa se a aplicação consegue conectar ao MySQL.
         [Fact]
         public async Task CreateConnection_DeveConectarAoMySql()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
+            var config = CriarConfig();
+            var factory = new DbConnectionFactory(config);
 
-            // Act
             await using var connection = factory.CreateConnection();
             await connection.OpenAsync();
 
-            // Assert
             Assert.Equal("RetroGames", connection.Database);
         }
 
+        // Testa se o repositório consegue buscar as condições dos jogos.
         [Fact]
         public async Task ObterTodosAsync_DeveRetornarCondicoes()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
-            var repository = new CondicaoJogoRepository(factory);
+            var config = CriarConfig();
+            var repository = new CondicaoJogoRepository(config);
 
-            // Act
             var condicoes = await repository.ObterTodosAsync();
 
-            // Assert
             Assert.NotEmpty(condicoes);
             Assert.Contains(condicoes, c => c.Descricao == "Novo");
             Assert.Contains(condicoes, c => c.Descricao == "Usado");
         }
 
+        // Testa se o repositório consegue buscar as plataformas.
         [Fact]
         public async Task PlataformaRepository_DeveRetornarPlataformas()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
-            var repository = new PlataformaRepository(factory);
+            var config = CriarConfig();
+            var repository = new PlataformaRepository(config);
 
-            // Act
             var plataformas = await repository.ListarAsync();
 
-            // Assert
             Assert.NotEmpty(plataformas);
             Assert.Contains(plataformas, p => p.Nome == "PlayStation 5");
             Assert.Contains(plataformas, p => p.Nome == "Xbox Series X");
             Assert.Contains(plataformas, p => p.Nome == "Nintendo Switch");
         }
 
+        // Testa se o repositório consegue buscar os gêneros.
         [Fact]
         public async Task GeneroRepository_DeveRetornarGeneros()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
-            var repository = new GeneroRepository(factory);
+            var config = CriarConfig();
+            var repository = new GeneroRepository(config);
 
-            // Act
             var generos = await repository.ObterTodosAsync();
 
-            // Assert
             Assert.NotEmpty(generos);
             Assert.Contains(generos, g => g.Nome == "Ação");
             Assert.Contains(generos, g => g.Nome == "Aventura");
             Assert.Contains(generos, g => g.Nome == "RPG");
         }
+
+        // Testa se o repositório consegue listar os jogos.
         [Fact]
         public async Task JogoRepository_DeveRetornarJogos()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
-            var repository = new JogoRepository(factory);
+            var config = CriarConfig();
+            var repository = new JogoRepository(config);
 
-            // Act
             var resultado = await repository.ListarAsync(
                 incluirInativos: true,
                 pagina: 1,
@@ -84,7 +82,6 @@ namespace RetroGames.WebApi.UnitTests
 
             var jogos = resultado.Itens;
 
-            // Assert
             Assert.NotEmpty(jogos);
             Assert.True(resultado.Total >= jogos.Count);
 
@@ -93,57 +90,54 @@ namespace RetroGames.WebApi.UnitTests
             Assert.Contains(jogos, j => j.Nome == "The Legend of Zelda: Tears of the Kingdom");
         }
 
+        // Testa se o repositório consegue buscar os usuários.
         [Fact]
         public async Task UsuarioRepository_DeveRetornarUsuarios()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
+            var config = CriarConfig();
+            var factory = new DbConnectionFactory(config);
             var repository = new UsuarioRepository(factory);
 
-            // Act
             var usuarios = await repository.ObterTodosAsync();
 
-            // Assert
             Assert.NotEmpty(usuarios);
             Assert.Contains(usuarios, u => u.Email == "cliente@retrogames.com");
         }
 
+        // Testa se o repositório consegue buscar os perfis.
         [Fact]
         public async Task PerfilRepository_DeveRetornarPerfis()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
+            var config = CriarConfig();
+            var factory = new DbConnectionFactory(config);
             var repository = new PerfilRepository(factory);
 
-            // Act
             var perfis = await repository.ObterTodosAsync();
 
-            // Assert
             Assert.NotEmpty(perfis);
             Assert.Contains(perfis, p => p.Descricao == "Administrador");
             Assert.Contains(perfis, p => p.Descricao == "Cliente");
         }
 
+        // Testa se o repositório consegue listar os vínculos entre jogos e gêneros.
         [Fact]
         public async Task JogoGeneroRepository_DeveListarTodosOsVinculos()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
-            var repository = new JogoGeneroRepository(factory);
+            var config = CriarConfig();
+            var repository = new JogoGeneroRepository(config);
 
-            // Act
             var vinculos = await repository.ListarTodosAsync();
 
-            // Assert
             Assert.NotEmpty(vinculos);
         }
+
+        // Testa se é possível buscar os vínculos de uma lista específica de jogos.
         [Fact]
         public async Task JogoGeneroRepository_DeveListarVinculosPorJogos()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
-            var repository = new JogoGeneroRepository(factory);
-            var jogoRepository = new JogoRepository(factory);
+            var config = CriarConfig();
+            var repository = new JogoGeneroRepository(config);
+            var jogoRepository = new JogoRepository(config);
 
             var resultadoJogos = await jogoRepository.ListarAsync(
                 incluirInativos: true,
@@ -154,36 +148,54 @@ namespace RetroGames.WebApi.UnitTests
                 .Select(j => j.Id)
                 .ToList();
 
-            // Act
             var vinculos = await repository.ListarPorJogosAsync(idsJogos);
 
-            // Assert
             Assert.All(vinculos, v => Assert.Contains(v.IdJogo, idsJogos));
         }
+
+        // Testa se é possível remover e inserir vínculos entre um jogo e gêneros.
         [Fact]
         public async Task JogoGeneroRepository_DeveInserirERemoverVinculos()
         {
-            // Arrange
-            var factory = new DbConnectionFactory();
-            var repository = new JogoGeneroRepository(factory);
+            var config = CriarConfig();
+            var repository = new JogoGeneroRepository(config);
 
             int idJogo = 1;
             var idsGeneros = new List<int> { 1, 3 };
 
-            // Act
             await repository.RemoverPorJogoAsync(idJogo);
             await repository.InserirAsync(idJogo, idsGeneros);
 
             var vinculos = await repository.ListarPorJogosAsync(
                 new List<int> { idJogo });
 
-            // Assert
             Assert.Equal(2, vinculos.Count);
             Assert.Contains(vinculos, v => v.IdGenero == 1);
             Assert.Contains(vinculos, v => v.IdGenero == 3);
 
-            // Cleanup
+            // Cleanup: remove os vínculos criados para não deixar alterações no banco.
             await repository.RemoverPorJogoAsync(idJogo);
+        }
+
+        // Cria a configuração de conexão utilizada pelos testes.
+        private static RepositoryConfig CriarConfig()
+        {
+            // Carrega as configurações do arquivo .env.
+            DotNetEnv.Env.TraversePath().Load();
+
+            var connectionString =
+                Environment.GetEnvironmentVariable("ConnectionStrings__Default");
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new InvalidOperationException(
+                    "A variável ConnectionStrings__Default não foi configurada.");
+            }
+
+            return new RepositoryConfig
+            {
+                ConnectionString = connectionString
+            };
         }
     }
 }
