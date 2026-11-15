@@ -46,11 +46,15 @@ builder.Services.AddScoped<IRepositorySet, RepositorySet>();
 
 // Registra os Services.
 builder.Services.AddScoped<CondicaoJogoService>();
-builder.Services.AddScoped<PlataformaService>();
 builder.Services.AddScoped<GeneroService>();
 builder.Services.AddScoped<JogoService>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<PerfilService>();
+builder.Services.AddScoped<PlataformaService>();
+
+builder.Services.AddScoped<IPlataformaService>(
+    provider => provider.GetRequiredService<PlataformaService>());
+
 
 var app = builder.Build();
 

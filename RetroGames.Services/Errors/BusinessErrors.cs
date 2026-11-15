@@ -15,33 +15,27 @@ public sealed record BusinessError(
 // Assim, evitamos repetir códigos e mensagens em várias classes.
 public static class BusinessErrors
 {
-    // Erro 100: acontece quando a plataforma procurada não existe.
-    // HTTP 404 significa que o recurso não foi encontrado.
+    // Erro 7: plataforma não encontrada.
     public static readonly BusinessError PlataformaNaoEncontrada =
-        new(100, "Plataforma não encontrada.", HttpStatusCode.NotFound);
+        new(7, "Plataforma não encontrada.", HttpStatusCode.NotFound);
 
-    // Erro 101: acontece quando tentamos cadastrar uma plataforma
-    // com um nome que já está sendo utilizado.
-    // HTTP 409 significa conflito de informações.
+    // Erro 8: nome de plataforma duplicado.
     public static readonly BusinessError PlataformaNomeDuplicado =
-        new(101, "Já existe uma plataforma com este nome.", HttpStatusCode.Conflict);
+        new(8, "Já existe uma plataforma com este nome.", HttpStatusCode.Conflict);
 
-    // Erro 102: acontece quando tentamos excluir uma plataforma
-    // que ainda possui jogos cadastrados.
+    // Erro 9: plataforma possui jogos vinculados.
     public static readonly BusinessError PlataformaPossuiJogos =
-        new(102, "Não é possível excluir: existem jogos desta plataforma.", HttpStatusCode.Conflict);
+        new(9, "Não é possível excluir: existem jogos desta plataforma.", HttpStatusCode.Conflict);
 
-    // Erro 103: acontece quando o jogo informado não existe.
+    // Erro 10: jogo não encontrado.
     public static readonly BusinessError JogoNaoEncontrado =
-        new(103, "Jogo não encontrado.", HttpStatusCode.NotFound);
+        new(10, "Jogo não encontrado.", HttpStatusCode.NotFound);
 
-    // Erro 104: acontece quando a condição de conservação
-    // informada para um jogo não existe.
+    // Erro 12: condição informada não existe.
     public static readonly BusinessError CondicaoNaoEncontrada =
-        new(104, "A condição informada não existe.", HttpStatusCode.NotFound);
+        new(12, "A condição informada não existe.", HttpStatusCode.NotFound);
 
-    // Erro 105: acontece quando um ou mais gêneros informados
-    // para um jogo não existem.
+    // Erro 13: um ou mais gêneros informados não existem.
     public static readonly BusinessError GeneroNaoEncontrado =
-        new(105, "Um ou mais gêneros informados não existem.", HttpStatusCode.NotFound);
+        new(13, "Um ou mais gêneros informados não existem.", HttpStatusCode.NotFound);
 }

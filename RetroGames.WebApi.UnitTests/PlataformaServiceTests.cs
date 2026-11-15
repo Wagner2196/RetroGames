@@ -23,7 +23,8 @@ public class PlataformaServiceTests
         var repository = new FakePlataformaRepository();
         repository.Plataformas.Add(plataforma);
 
-        var service = new PlataformaService(repository);
+        var repositorySet = new FakeRepositorySet(repository);
+        var service = new PlataformaService(repositorySet);
 
         // Act
         var resultado = await service.BuscarPorIdAsync(1);
@@ -33,12 +34,30 @@ public class PlataformaServiceTests
         Assert.Equal("PlayStation 5", resultado.Nome);
     }
 
+    public class FakeRepositorySet : IRepositorySet
+    {
+        // Repositório falso de plataformas utilizado nos testes.
+        public IPlataformaRepository Plataforma { get; }
+
+        // Os demais repositórios não são utilizados nestes testes.
+        public IJogoRepository Jogo => null!;
+        public IJogoGeneroRepository JogoGenero => null!;
+        public IGeneroRepository Genero => null!;
+        public ICondicaoJogoRepository CondicaoJogo => null!;
+
+        public FakeRepositorySet(IPlataformaRepository plataforma)
+        {
+            Plataforma = plataforma;
+        }
+    }
+
     [Fact]
     public async Task BuscarPorIdAsync_DeveLancarExcecao_QuandoNaoExistir()
     {
         // Arrange
         var repository = new FakePlataformaRepository();
-        var service = new PlataformaService(repository);
+        var repositorySet = new FakeRepositorySet(repository);
+        var service = new PlataformaService(repositorySet);
 
         // Act
         var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
@@ -54,7 +73,8 @@ public class PlataformaServiceTests
     {
         // Arrange
         var repository = new FakePlataformaRepository();
-        var service = new PlataformaService(repository);
+        var repositorySet = new FakeRepositorySet(repository);
+        var service = new PlataformaService(repositorySet);
 
         var plataforma = new Plataforma
         {
@@ -86,7 +106,8 @@ public class PlataformaServiceTests
             AnoLancamento = 2020
         });
 
-        var service = new PlataformaService(repository);
+        var repositorySet = new FakeRepositorySet(repository);
+        var service = new PlataformaService(repositorySet);
 
         var novaPlataforma = new Plataforma
         {
@@ -155,4 +176,5 @@ public class FakePlataformaRepository : IPlataformaRepository
 
         return Task.CompletedTask;
     }
+
 }

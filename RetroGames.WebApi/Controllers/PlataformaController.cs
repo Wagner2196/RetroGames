@@ -11,11 +11,11 @@ namespace RetroGames.WebApi.Controllers
     [Route("api/[controller]")]
     public class PlataformaController : ControllerBase
     {
-        // Guarda o Service que será utilizado pelo Controller.
-        private readonly PlataformaService _service;
+        // Guarda a interface do Service que será utilizada pelo Controller.
+        private readonly IPlataformaService _service;
 
-        // O ASP.NET Core entrega o Service por injeção de dependência.
-        public PlataformaController(PlataformaService service)
+        // O ASP.NET Core entrega a implementação do Service por injeção de dependência.
+        public PlataformaController(IPlataformaService service)
         {
             _service = service;
         }
@@ -25,7 +25,7 @@ namespace RetroGames.WebApi.Controllers
         public async Task<IActionResult> ObterTodos()
         {
             // Solicita ao Service a lista de plataformas cadastradas.
-            var plataformas = await _service.ObterTodosAsync();
+            var plataformas = await _service.ListarAsync();
 
             // Retorna a lista com o status HTTP 200 (OK).
             return Ok(plataformas);
