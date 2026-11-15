@@ -4,18 +4,21 @@ using RetroGames.Repository;
 
 namespace RetroGames.Services
 {
-    public class GeneroService
+    public class GeneroService : IGeneroService
     {
-        private readonly GeneroRepository _repository;
+        // Recebe o conjunto de repositórios.
+        private readonly IRepositorySet _repositorySet;
 
-        public GeneroService(GeneroRepository repository)
+        // O construtor recebe o IRepositorySet.
+        public GeneroService(IRepositorySet repositorySet)
         {
-            _repository = repository;
+            _repositorySet = repositorySet;
         }
 
+        // Lista todos os gêneros.
         public async Task<List<Genero>> ObterTodosAsync()
         {
-            return await _repository.ObterTodosAsync();
+            return await _repositorySet.Genero.ObterTodosAsync();
         }
     }
 }

@@ -1,20 +1,24 @@
+
 using RetroGames.Model.Model;
 using RetroGames.Repository;
 
 namespace RetroGames.Services
 {
-    public class CondicaoJogoService
+    public class CondicaoJogoService : ICondicaoJogoService
     {
-        private readonly CondicaoJogoRepository _repository;
+        // Recebe o conjunto de repositórios.
+        private readonly IRepositorySet _repositorySet;
 
-        public CondicaoJogoService(CondicaoJogoRepository repository)
+        // O construtor recebe o IRepositorySet.
+        public CondicaoJogoService(IRepositorySet repositorySet)
         {
-            _repository = repository;
+            _repositorySet = repositorySet;
         }
 
+        // Lista todas as condições de jogo.
         public async Task<List<CondicaoJogo>> ObterTodosAsync()
         {
-            return await _repository.ObterTodosAsync();
+            return await _repositorySet.CondicaoJogo.ObterTodosAsync();
         }
     }
 }

@@ -51,6 +51,8 @@ builder.Services.AddScoped<JogoService>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<PerfilService>();
 builder.Services.AddScoped<PlataformaService>();
+builder.Services.AddScoped<IGeneroService, GeneroService>();
+builder.Services.AddScoped<ICondicaoJogoService, CondicaoJogoService>();
 
 builder.Services.AddScoped<IPlataformaService>(
     provider => provider.GetRequiredService<PlataformaService>());
