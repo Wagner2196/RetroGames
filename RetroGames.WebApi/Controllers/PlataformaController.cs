@@ -17,6 +17,25 @@ namespace RetroGames.WebApi.Controllers
             _service = service;
         }
 
+
+        // Busca uma plataforma pelo ID.
+        [HttpGet("{id}")]
+        public async Task<IActionResult> ListarPorId(int id)
+        {
+            var plataforma = await _service.BuscarPorIdAsync(id);
+
+            if (plataforma == null)
+                return NotFound();
+
+            var response = new RetroGamesResponseApiModelT<ListarPlataformaResponseApiModel>
+            {
+                ResponseCode = ResponseCodes.SUCCESS,
+                Data = plataforma.ParaResponse()
+            };
+
+            return Ok(response);
+        }
+
         // Lista as plataformas e retorna o envelope padrão da API.
         [HttpGet]
         public async Task<IActionResult> ObterTodos()
