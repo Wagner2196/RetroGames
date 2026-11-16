@@ -1,34 +1,38 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RetroGames.Services;
+using RetroGames.WebApi.ApiModels;
+using RetroGames.WebApi.Mappers;
 
 namespace RetroGames.WebApi.Controllers
 {
-    // Indica que esta classe é um Controller de uma API.
     [ApiController]
-
-    // Define a rota: api/CondicaoJogo
     [Route("api/[controller]")]
     public class CondicaoJogoController : ControllerBase
     {
-        // Guarda o Service que será utilizado pelo Controller.
-        private readonly CondicaoJogoService _service;
+        private readonly ICondicaoJogoService _service;
 
-        // O ASP.NET Core entrega o Service por injeção de dependência.
-        public CondicaoJogoController(CondicaoJogoService service)
+        public CondicaoJogoController(ICondicaoJogoService service)
         {
             _service = service;
         }
 
-        // Indica que este método responde a requisições HTTP GET.
+        // Lista todas as condições de jogo.
         [HttpGet]
         public async Task<IActionResult> ObterTodos()
         {
-            // Solicita ao Service a lista de condições cadastradas.
             var condicoes = await _service.ObterTodosAsync();
 
-            // Retorna a lista com o status HTTP 200 (OK).
-            return Ok(condicoes);
+            var response =
+                new RetroGamesResponseApiModelT<List<ListarCondicaoJogoResponseApiModel>>
+                {
+                    ResponseCode = ResponseCodes.SUCCESS,
+                    Data = condicoes
+                        .Select(condicao => condicao.ParaResponse())
+                        .ToList()
+                };
+
+            return Ok(response);
         }
     }
 }

@@ -1,34 +1,38 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RetroGames.Services;
+using RetroGames.WebApi.ApiModels;
+using RetroGames.WebApi.Mappers;
 
 namespace RetroGames.WebApi.Controllers
 {
-    // Indica que esta classe é um Controller de uma API.
     [ApiController]
-
-    // Define a rota: api/Genero
     [Route("api/[controller]")]
     public class GeneroController : ControllerBase
     {
-        // Guarda o Service que será utilizado pelo Controller.
-        private readonly GeneroService _service;
+        private readonly IGeneroService _service;
 
-        // O ASP.NET Core entrega o Service por injeção de dependência.
-        public GeneroController(GeneroService service)
+        public GeneroController(IGeneroService service)
         {
             _service = service;
         }
 
-        // Indica que este método responde a requisições HTTP GET.
+        // Lista todos os gêneros.
         [HttpGet]
         public async Task<IActionResult> ObterTodos()
         {
-            // Solicita ao Service a lista de gêneros cadastrados.
             var generos = await _service.ObterTodosAsync();
 
-            // Retorna a lista com o status HTTP 200 (OK).
-            return Ok(generos);
+            var response =
+                new RetroGamesResponseApiModelT<List<ListarGeneroResponseApiModel>>
+                {
+                    ResponseCode = ResponseCodes.SUCCESS,
+                    Data = generos
+                        .Select(genero => genero.ParaResponse())
+                        .ToList()
+                };
+
+            return Ok(response);
         }
     }
 }
